@@ -14,4 +14,8 @@ public abstract class Sorter<T extends Comparable<T>> {
 		toBeSorted.set(index1, toBeSorted.get(index2));
 		toBeSorted.set(index2, tmp);
 	}
+	
+	public String toString(){
+		return this.getClass().getSimpleName();
+	}
 }
