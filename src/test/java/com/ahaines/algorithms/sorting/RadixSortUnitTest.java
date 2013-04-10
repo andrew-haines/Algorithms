@@ -87,6 +87,7 @@ public class RadixSortUnitTest extends AbstractSorterIntegrationTest<Integer>{
 		return Arrays.<Sorter<Integer>>asList(new RadixSort(Factory.getBinaryRadixKeyExtractor(4)), 
 											  new RadixSort(Factory.getBinaryRadixKeyExtractor(8)),
 											  new RadixSort(Factory.getBinaryRadixKeyExtractor(16)), 
+											  new RadixSort(Factory.getBinaryRadixKeyExtractor(24)), 
 											  new RadixSort(Factory.getBase10RadixKeyExtractor(2)), 
 											  new RadixSort(Factory.getBase10RadixKeyExtractor(3)), 
 											  new RadixSort(Factory.getBase10RadixKeyExtractor(4)), 

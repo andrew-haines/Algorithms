@@ -24,6 +24,7 @@ public class RadixSort extends CountingSort {
 		List<Integer> arraySorts = toBeSorted;
 		int totalIterations = extractor.getRadixIterations();
 		for (int i = 0; i < totalIterations; i++){// work out how many times to sort. Each sort will be for a different section of the maximum integer value (2147483647 - 10 digits)
+			extractor.newRadixPos(radixPos);
 			arraySorts = super.sort(arraySorts, startPos, endPos); // assign to next sorted array
 			radixPos++;
 		}
@@ -42,27 +43,56 @@ public class RadixSort extends CountingSort {
 
 	public static int getBase10RadixKey(int completeNumber, int radixPos, int digitsInKey) {
 		
-		int mostSignificantDigit = radixPos*digitsInKey;
+		int mostSignificantDigitNum = radixPos*digitsInKey;
 		
-		int mostSignificantPower = (int)(Math.pow(10, mostSignificantDigit));
-		int leastSignificantPower = (int)(Math.pow(10, mostSignificantDigit - digitsInKey));
+		int mostSignificantPower = getMostSignificantDigitPower(mostSignificantDigitNum);
+		int leastSignificantPower = getLeastSignificantDigitPower(mostSignificantDigitNum, digitsInKey);
 		
+		return getBase10RadixKeyFromPowers(completeNumber, mostSignificantPower, leastSignificantPower);
+	}
+	
+	private static int getMostSignificantDigitPower(int mostSignificantDigitNum){
+		return (int)(Math.pow(10, mostSignificantDigitNum));
+	}
+	
+	private static int getLeastSignificantDigitPower(int mostSignificantDigitNum, int digitsInKey){
+		return (int)(Math.pow(10, mostSignificantDigitNum - digitsInKey));
+	}
+	
+	private static int getBase10RadixKeyFromPowers(int completeNumber, int mostSignificantPower, int leastSignificantPower) {
 		return (completeNumber % mostSignificantPower) / leastSignificantPower;
 	}
 
 	public static int getBinaryRadixKey(int completeNumber, int radixPos, int digitsInKey) {
+		
+		int mask = getBinaryMaskForRadix(radixPos, digitsInKey);
+		int shiftAmount = getBinaryShiftAmountForRadix(radixPos, digitsInKey);
+		return getBinaryRadixKeyFromMask(completeNumber, mask, shiftAmount);
+	}
+	
+	private static int getBinaryMaskForRadix(int radixPos, int digitsInKey){
 		int mask = 0;
 		int offsetPos = radixPos-1;
 		mask = (1 << (digitsInKey*offsetPos)+digitsInKey) - 1;
 		if (mask == 0){ // we have looped all the way round so subtract an additional 1
 			mask--;
 		}
-		return (completeNumber & mask) >> (offsetPos * digitsInKey);
+		
+		return mask;
+	}
+	
+	private static int getBinaryShiftAmountForRadix(int radixPos, int digitsInKey){
+		int offsetPos = radixPos-1;
+		return offsetPos * digitsInKey;
+	}
+	
+	private static int getBinaryRadixKeyFromMask(int completeNumber, int mask, int shift){
+		return (completeNumber & mask) >> shift;
 	}
 	
 	@Override
 	public String toString() {
-		return super.toString()+" - extractor: "+extractor.getClass().getName();
+		return super.toString()+" - extractor: "+extractor.toString();
 	}
 
 	public static interface RadixKeyExtractor{
@@ -73,12 +103,17 @@ public class RadixSort extends CountingSort {
 		
 		int getRadixKey(int completeNumber, int radixPos);
 		
+		void newRadixPos(int radixPos);
+		
 		public static class Factory{
 			
 			private Factory(){}
 			
 			public static RadixKeyExtractor getBase10RadixKeyExtractor(final int digitsInKey){
 				return new RadixKeyExtractor(){
+					
+					private int currentMostSignificantDigit;
+					private int currentLeastSignificantDigit;
 
 					@Override
 					public int getMaxUniqueValues() {
@@ -92,7 +127,20 @@ public class RadixSort extends CountingSort {
 
 					@Override
 					public int getRadixKey(int completeNumber, int radixPos) {
-						return RadixSort.getBase10RadixKey(completeNumber, radixPos, digitsInKey);
+						
+						return RadixSort.getBase10RadixKeyFromPowers(completeNumber, currentMostSignificantDigit, currentLeastSignificantDigit);
+					}
+					
+					public String toString(){
+						return "base10("+digitsInKey+")";
+					}
+
+					@Override
+					public void newRadixPos(int radixPos) {
+						// recalculate radixPos
+						int mostSignificantDigitNum = radixPos*digitsInKey;
+						currentMostSignificantDigit = RadixSort.getMostSignificantDigitPower(mostSignificantDigitNum);
+						currentLeastSignificantDigit = RadixSort.getLeastSignificantDigitPower(mostSignificantDigitNum, digitsInKey);
 					}
 					
 				};
@@ -101,6 +149,9 @@ public class RadixSort extends CountingSort {
 			public static RadixKeyExtractor getBinaryRadixKeyExtractor(final int digitsInKey){
 				return new RadixKeyExtractor(){
 
+					private int currentRadixMask;
+					private int currentRadixShift;
+					
 					@Override
 					public int getMaxUniqueValues() {
 						return 1 << digitsInKey;
@@ -113,7 +164,17 @@ public class RadixSort extends CountingSort {
 
 					@Override
 					public int getRadixKey(int completeNumber, int radixPos) {
-						return RadixSort.getBinaryRadixKey(completeNumber, radixPos, digitsInKey);
+						return RadixSort.getBinaryRadixKeyFromMask(completeNumber, currentRadixMask, currentRadixShift);
+					}
+					
+					public String toString(){
+						return "binary("+digitsInKey+")";
+					}
+
+					@Override
+					public void newRadixPos(int radixPos) {
+						currentRadixMask = RadixSort.getBinaryMaskForRadix(radixPos, digitsInKey);
+						currentRadixShift = RadixSort.getBinaryShiftAmountForRadix(radixPos, digitsInKey);
 					}
 					
 				};

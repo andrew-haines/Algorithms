@@ -1,6 +1,8 @@
 package com.ahaines.datastructures.trees;
 
-public abstract class AbstractBinaryTree<NodeType extends AbstractBinaryTreeNode<NodeType,T>, T extends Comparable<T>> {
+import java.util.Iterator;
+
+public abstract class AbstractBinaryTree<NodeType extends AbstractBinaryTreeNode<NodeType,T>, T extends Comparable<T>> implements Iterable<T>{
 	
 	protected NodeType root;
 	
@@ -135,5 +137,33 @@ public abstract class AbstractBinaryTree<NodeType extends AbstractBinaryTreeNode
 		}
 		return builder.toString();
 	}
+	@Override
+	public Iterator<T> iterator() {
+		
+		return new Iterator<T>(){
+			
+			NodeType next = getMinimum(root);
+			
+			@Override
+			public boolean hasNext() {
+				return next != null;
+			}
 
+			@Override
+			public T next() {
+				T val = next.getValue();
+				next = getSuccessor(next);
+				
+				return val;
+			}
+
+			@Override
+			public void remove() {
+				deleteNode(next);
+			}
+			
+		};
+	}
+
+	
 }

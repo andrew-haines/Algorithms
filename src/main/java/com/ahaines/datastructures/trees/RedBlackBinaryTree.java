@@ -15,7 +15,7 @@ public class RedBlackBinaryTree<T extends Comparable<T>> extends AbstractBinaryT
 		if (rightNode.getLeft() != SENTINAL){
 			rightNode.getLeft().setParent(pivot);
 		}
-		// following makes the rightNode point to pivot's old parent (essentially swapping places with it)
+		// following makes the rightNode point to pivot's old parent (eradixssentially swapping places with it)
 		rightNode.setParent(pivot.getParent());
 		if (pivot.getParent() == SENTINAL){
 			root = rightNode;

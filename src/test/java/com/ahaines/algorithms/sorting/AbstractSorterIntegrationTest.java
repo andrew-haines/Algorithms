@@ -1,6 +1,7 @@
 package com.ahaines.algorithms.sorting;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
@@ -73,12 +74,21 @@ public abstract class AbstractSorterIntegrationTest<T extends Comparable<T>> {
 		return NUMBER_TESTS;
 	}
 
-	private boolean isSorted(List<T> array){
-		for (int i = 1; i < array.size(); i++){
-			if (array.get(i).compareTo(array.get(i-1)) < 0){
-				return false; // i-1 is bigger then i
+	public static <T extends Comparable<T>> boolean isSorted(Iterable<T> array){
+		Iterator<T> it = array.iterator();
+		if (it.hasNext()){
+			
+			T previous = it.next();
+			
+			while(it.hasNext()){
+				T next = it.next();
+				if (next.compareTo(previous) < 0){
+					return false;
+				}
+				previous = next;
 			}
 		}
+		
 		return true;
 	}
 	
