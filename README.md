@@ -1,6 +1,6 @@
 A collection of sorting algorithms and datastructures in java
 
-Below is the output of a single run on a macbook pro so that performance characteristics can be compared. Please ignore the memory footprint. These values are clearly not correct
+Below is the output of a single run on a macbook pro so that performance characteristics can be compared. 
 
 BubbleSort			- On 100000 random integer values: 52368ms
 InsertionSort			- On 100000 random integer values: 16374ms
