@@ -56,7 +56,7 @@ public abstract class AbstractSorterIntegrationTest<T extends Comparable<T>> {
 			for (int i = 0; i < getNumberOfTests(); i++){
 				MemoryUtil.putOutTheGarbage();
 				long memUsed = MemoryUtil.getMemoryUse();
-				List<T> array = new ArrayList<T>(this.array); // create a copy for that master array is not affected
+				Iterable<T> array = new ArrayList<T>(this.array); // create a copy for that master array is not affected
 				long startTime = System.currentTimeMillis();
 				array = sorter.sort(array);
 				long deltaTime = System.currentTimeMillis() - startTime;
