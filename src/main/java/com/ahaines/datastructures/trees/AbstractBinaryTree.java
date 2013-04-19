@@ -7,11 +7,11 @@ public abstract class AbstractBinaryTree<NodeType extends AbstractBinaryTreeNode
 	protected NodeType root;
 	
 	public NodeType insertNode(T valueToInsert){
-		NodeType tempParent = null;
+		NodeType tempParent = getSentinal();
 		NodeType x = root;
 		boolean isLeftRelationship = false;
 		
-		while (x != null){
+		while (x != getSentinal()){
 			tempParent = x;
 			if (valueToInsert.compareTo(x.getValue()) < 0){
 				x = x.getLeft();
@@ -25,7 +25,7 @@ public abstract class AbstractBinaryTree<NodeType extends AbstractBinaryTreeNode
 		
 		NodeType newNode = getNewNode(valueToInsert, tempParent);
 		
-		if (tempParent == null){
+		if (tempParent == getSentinal()){
 			root = newNode; // root does not have a parent
 		}	
 		else if (isLeftRelationship){
@@ -35,6 +35,9 @@ public abstract class AbstractBinaryTree<NodeType extends AbstractBinaryTreeNode
 			tempParent.setRight(newNode);
 		}
 		return newNode;
+	}
+	protected NodeType getSentinal() {
+		return null;
 	}
 	protected abstract NodeType getNewNode(T value, NodeType parent);
 	
@@ -107,19 +110,19 @@ public abstract class AbstractBinaryTree<NodeType extends AbstractBinaryTreeNode
 	 * @return
 	 */
 	public NodeType getMinimum(NodeType nodeToStartFrom){
-		while(nodeToStartFrom.getLeft() != null){
+		while(nodeToStartFrom != null && nodeToStartFrom.getLeft() != getSentinal()){
 			nodeToStartFrom = nodeToStartFrom.getLeft();
 		}
 		return nodeToStartFrom;
 	}
 	
 	public NodeType getSuccessor(NodeType node){
-		if (node.getRight() != null){
+		if (node.getRight() != getSentinal()){
 			return getMinimum(node.getRight()); // look at the next minumum for the right (greater then) child
 		}
 		
 		NodeType tempParent = node.getParent();
-		while (tempParent != null && node == tempParent.getRight()){ // keep looking up at the parent until the node we are transversing up is no longer on the right (ie no longer greater then). This means that this parent has to be greater then this node and thus the next successor
+		while (tempParent != getSentinal() && node == tempParent.getRight()){ // keep looking up at the parent until the node we are transversing up is no longer on the right (ie no longer greater then). This means that this parent has to be greater then this node and thus the next successor
 			node = tempParent;
 			tempParent = node.getParent();
 		}
@@ -146,7 +149,7 @@ public abstract class AbstractBinaryTree<NodeType extends AbstractBinaryTreeNode
 			
 			@Override
 			public boolean hasNext() {
-				return next != null;
+				return next != getSentinal();
 			}
 
 			@Override

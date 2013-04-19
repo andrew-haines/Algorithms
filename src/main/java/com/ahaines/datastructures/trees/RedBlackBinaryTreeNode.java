@@ -6,9 +6,11 @@ public class RedBlackBinaryTreeNode<T extends Comparable<T>> extends AbstractBin
 	
 	private Colour colour;
 
-	public RedBlackBinaryTreeNode(T value, Colour colour, RedBlackBinaryTreeNode<T> parent) {
+	public RedBlackBinaryTreeNode(T value, Colour colour, RedBlackBinaryTreeNode<T> parent, RedBlackBinaryTreeNode<T> sentinal) {
 		super(value, parent);
 		setColour(colour);
+		setLeft(sentinal);
+		setRight(sentinal);
 	}
 
 	public Colour getColour() {
